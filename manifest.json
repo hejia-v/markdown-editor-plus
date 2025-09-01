@@ -1,0 +1,11 @@
+{
+    "id": "markdown-editor-plus",
+    "name": "Markdown Editor Plus",
+    "version": "1.0.0",
+    "minAppVersion": "0.15.0",
+    "description": "在右侧边栏提供粗体查找和批量处理工具",
+    "author": "Your Name",
+    "authorUrl": "https://github.com/yourname",
+    "isDesktopOnly": false
+  }
+  
