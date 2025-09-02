@@ -307,7 +307,8 @@ import {
     const styleEl = document.createElement('style');
     styleEl.id = 'editor-plus-styles';
     styleEl.textContent = `
-      .editor-plus-container {
+      /* 使用插件视图特定的选择器确保样式只作用于本插件 */
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-container {
         padding: 20px 16px;
         font-family: var(--font-interface);
         background: transparent;
@@ -318,16 +319,14 @@ import {
         gap: 24px;
       }
 
-
-
-      .editor-plus-functions {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-functions {
         flex: 1;
         display: flex;
         flex-direction: column;
         gap: 20px;
       }
 
-      .function-group {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .function-group {
         background: var(--background-secondary);
         border-radius: 8px;
         padding: 16px;
@@ -335,12 +334,12 @@ import {
         transition: all 0.2s ease;
       }
 
-      .function-group:hover {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .function-group:hover {
         border-color: var(--text-accent);
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       }
 
-      .group-title {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .group-title {
         margin: 0 0 12px 0;
         font-size: 14px;
         font-weight: 600;
@@ -350,7 +349,7 @@ import {
         gap: 8px;
       }
 
-      .group-title::before {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .group-title::before {
         content: "";
         width: 3px;
         height: 14px;
@@ -358,18 +357,18 @@ import {
         border-radius: 2px;
       }
 
-      .button-row {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .button-row {
         display: flex;
         gap: 8px;
       }
 
-      .button-column {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .button-column {
         display: flex;
         flex-direction: column;
         gap: 8px;
       }
 
-      .editor-plus-btn {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-btn {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -387,7 +386,7 @@ import {
         overflow: hidden;
       }
 
-      .editor-plus-btn::before {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-btn::before {
         content: "";
         position: absolute;
         top: 0;
@@ -398,88 +397,88 @@ import {
         transition: left 0.5s ease;
       }
 
-      .editor-plus-btn:hover::before {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-btn:hover::before {
         left: 100%;
       }
 
-      .editor-plus-btn:hover {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-btn:hover {
         border-color: var(--text-accent);
         background: var(--background-modifier-hover);
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
 
-      .editor-plus-btn:active {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-btn:active {
         transform: translateY(0);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
 
-      .btn-icon {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .btn-icon {
         width: 16px;
         height: 16px;
         stroke-width: 2;
         transition: transform 0.2s ease;
       }
 
-      .editor-plus-btn:hover .btn-icon {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-btn:hover .btn-icon {
         transform: scale(1.1);
       }
 
-      .nav-btn {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .nav-btn {
         flex: 1;
         background: linear-gradient(135deg, var(--background-primary), var(--background-secondary));
       }
 
-      .prev-btn:hover {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .prev-btn:hover {
         background: linear-gradient(135deg, #4f46e5, #6366f1);
         color: white;
         border-color: #4f46e5;
       }
 
-      .next-btn:hover {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .next-btn:hover {
         background: linear-gradient(135deg, #059669, #10b981);
         color: white;
         border-color: #059669;
       }
 
-      .edit-btn {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .edit-btn {
         justify-content: flex-start;
       }
 
-      .current-btn:hover {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .current-btn:hover {
         background: linear-gradient(135deg, #d97706, #f59e0b);
         color: white;
         border-color: #d97706;
       }
 
-      .danger-btn:hover {
+      .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .danger-btn:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
         color: white;
         border-color: #dc2626;
       }
 
-
-
-      .dark .editor-plus-container {
+      /* 深色主题支持 */
+      .theme-dark .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-container {
         background: var(--background-primary);
       }
 
-      .dark .function-group {
+      .theme-dark .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .function-group {
         background: var(--background-primary-alt);
         border-color: var(--background-modifier-border-hover);
       }
 
-      .dark .editor-plus-btn {
+      .theme-dark .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-btn {
         background: var(--background-secondary);
         border-color: var(--background-modifier-border-hover);
       }
 
+      /* 响应式设计 */
       @media (max-width: 300px) {
-        .button-row {
+        .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .button-row {
           flex-direction: column;
         }
         
-        .editor-plus-container {
+        .workspace-leaf-content[data-type="${VIEW_TYPE_EDITOR_PLUS}"] .editor-plus-container {
           padding: 16px 12px;
         }
       }
