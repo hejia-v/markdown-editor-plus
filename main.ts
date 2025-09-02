@@ -1,22 +1,26 @@
 import {
-    App,
-    ItemView,
-    MarkdownView,
-    Notice,
-    Plugin,
-    WorkspaceLeaf,
-    Editor,
-  } from "obsidian";
+  App,
+  ItemView,
+  MarkdownView,
+  Notice,
+  Plugin,
+  WorkspaceLeaf,
+  Editor,
+  addIcon,
+} from "obsidian";
   
   const VIEW_TYPE_EDITOR_PLUS = "markdown-editor-plus-view";
   
   export default class MarkdownEditorPlusPlugin extends Plugin {
-    async onload() {
-      // 注册侧边栏视图
-      this.registerView(
-        VIEW_TYPE_EDITOR_PLUS,
-        (leaf) => new EditorPlusView(leaf, this.app)
-      );
+  async onload() {
+    // 注册自定义图标
+    this.registerCustomIcon();
+    
+    // 注册侧边栏视图
+    this.registerView(
+      VIEW_TYPE_EDITOR_PLUS,
+      (leaf) => new EditorPlusView(leaf, this.app)
+    );
   
       // 提供命令打开工具面板
       this.addCommand({
@@ -33,6 +37,26 @@ import {
 
     onunload() {
       this.app.workspace.detachLeavesOfType(VIEW_TYPE_EDITOR_PLUS);
+    }
+
+    private registerCustomIcon() {
+      // 添加自定义 SVG 图标
+      const iconId = "markdown-editor-plus-icon";
+      
+      // 使用 Obsidian 的 addIcon API 注册图标
+      addIcon(iconId, `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#6366f1" stroke="#4f46e5" stroke-width="2"/>
+        <path d="M20 35 L20 65 L25 65 L25 45 L35 60 L40 60 L50 45 L50 65 L55 65 L55 35 L45 35 L37.5 50 L30 35 Z" fill="white"/>
+        <circle cx="75" cy="25" r="12" fill="#10b981" stroke="#059669" stroke-width="1.5"/>
+        <path d="M71 25 L79 25 M75 21 L75 29" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <g transform="translate(60, 55)">
+          <path d="M2 18 L6 14 L14 22 L10 26 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+          <path d="M6 14 L14 6 L18 10 L10 18 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1"/>
+          <path d="M8 12 L12 8 L14 10 L10 14 Z" fill="#fef3c7"/>
+        </g>
+        <circle cx="30" cy="20" r="2" fill="white" opacity="0.8"/>
+        <circle cx="70" cy="75" r="1.5" fill="white" opacity="0.6"/>
+      </svg>`);
     }
 
     async activateView() {
@@ -128,9 +152,13 @@ import {
       return VIEW_TYPE_EDITOR_PLUS;
     }
   
-    getDisplayText() {
-      return "Markdown Editor Plus";
-    }
+      getDisplayText() {
+    return "Markdown Editor Plus";
+  }
+
+  getIcon() {
+    return "markdown-editor-plus-icon";
+  }
   
     async onOpen() {
       const container = this.containerEl.children[1];
@@ -151,7 +179,7 @@ import {
     
     // 添加副标题
     headerSection.createEl("p", {
-      text: "粗体文本管理工具",
+      text: "Markdown 文本管理工具",
       cls: "editor-plus-subtitle"
     });
 
@@ -217,6 +245,65 @@ import {
       <span>取消全部粗体</span>
     `;
       btnRemove.onclick = () => this.removeAllBold();
+
+    // 删除所有分割线
+    const btnRemoveDividers = editButtons.createEl("button", {
+      cls: "editor-plus-btn edit-btn danger-btn"
+    });
+    btnRemoveDividers.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 12h14M5 12l-4-4M5 12l-4 4"/>
+      </svg>
+      <span>删除所有分割线</span>
+    `;
+    btnRemoveDividers.onclick = () => this.removeAllDividers();
+
+    // 删除当前行
+    const btnDeleteCurrentLine = editButtons.createEl("button", {
+      cls: "editor-plus-btn edit-btn danger-btn"
+    });
+    btnDeleteCurrentLine.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 6h18"/>
+        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+        <path d="M8 6V4c0-1 1-2 2-2h4c0-1 1-2 2-2v2"/>
+        <line x1="10" y1="11" x2="10" y2="17"/>
+        <line x1="14" y1="11" x2="14" y2="17"/>
+      </svg>
+      <span>删除光标所在行</span>
+    `;
+    btnDeleteCurrentLine.onclick = () => this.deleteCurrentLine();
+
+    // 删除选中区域所在行
+    const btnDeleteSelectedLines = editButtons.createEl("button", {
+      cls: "editor-plus-btn edit-btn danger-btn"
+    });
+    btnDeleteSelectedLines.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 6h18"/>
+        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+        <path d="M8 6V4c0-1 1-2 2-2h4c0-1 1-2 2-2v2"/>
+        <path d="M9 9l6 6"/>
+        <path d="M15 9l-6 6"/>
+      </svg>
+      <span>删除选中区域所在行</span>
+    `;
+    btnDeleteSelectedLines.onclick = () => this.deleteSelectedLines();
+
+    // 删除所有行尾空白
+    const btnTrimWhitespace = editButtons.createEl("button", {
+      cls: "editor-plus-btn edit-btn danger-btn"
+    });
+    btnTrimWhitespace.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+        <polyline points="14,2 14,8 20,8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+      <span>删除所有行尾空白</span>
+    `;
+    btnTrimWhitespace.onclick = () => this.removeTrailingWhitespace();
   
     // 添加状态指示器
     const statusSection = mainContainer.createEl("div", { cls: "editor-plus-status" });
@@ -643,6 +730,212 @@ import {
       this.focusEditor(view, editor, cursorPos);
       this.updateStatus("已取消选中的粗体", 'success');
       new Notice("已取消当前选中的粗体");
+    }
+
+    /** 删除所有分割线 */
+    removeAllDividers() {
+      this.updateStatus("正在删除分割线...", 'working');
+      
+      const result = this.getActiveEditor();
+      if (!result) {
+        this.updateStatus("需要打开 Markdown 文件", 'error');
+        new Notice("请打开一个 Markdown 文件并切换到编辑模式");
+        return;
+      }
+      const { editor, view } = result;
+      let content = editor.getValue();
+
+      // 匹配只包含 "---" 的行（忽略行首和行尾的空白字符）
+      const dividerRegex = /^\s*---\s*$/gm;
+      const matches = content.match(dividerRegex);
+      const dividerCount = matches ? matches.length : 0;
+      
+      if (dividerCount === 0) {
+        this.updateStatus("未找到分割线", 'error');
+        new Notice("未找到分割线");
+        return;
+      }
+
+      // 删除所有匹配的分割线行
+      content = content.replace(dividerRegex, '');
+
+      editor.setValue(content);
+      this.focusEditor(view, editor);
+      this.updateStatus(`已删除 ${dividerCount} 条分割线`, 'success');
+      new Notice(`已删除 ${dividerCount} 条分割线`);
+    }
+
+    /** 删除光标所在行 */
+    deleteCurrentLine() {
+      this.updateStatus("正在删除当前行...", 'working');
+      
+      const result = this.getActiveEditor();
+      if (!result) {
+        this.updateStatus("需要打开 Markdown 文件", 'error');
+        new Notice("请打开一个 Markdown 文件并切换到编辑模式");
+        return;
+      }
+      const { editor, view } = result;
+      
+      // 获取当前光标位置
+      const cursorPos = editor.getCursor();
+      const currentLineNumber = cursorPos.line;
+      
+      // 获取当前行的内容
+      const currentLineContent = editor.getLine(currentLineNumber);
+      
+      // 获取文档总行数
+      const totalLines = editor.lineCount();
+      
+      // 确定删除范围
+      let deleteFrom: { line: number; ch: number };
+      let deleteTo: { line: number; ch: number };
+      
+      if (totalLines === 1) {
+        // 如果只有一行，清空内容但保留行
+        deleteFrom = { line: 0, ch: 0 };
+        deleteTo = { line: 0, ch: currentLineContent.length };
+      } else if (currentLineNumber === totalLines - 1) {
+        // 如果是最后一行，删除前面的换行符
+        deleteFrom = { line: currentLineNumber - 1, ch: editor.getLine(currentLineNumber - 1).length };
+        deleteTo = { line: currentLineNumber, ch: currentLineContent.length };
+      } else {
+        // 删除当前行及其后面的换行符
+        deleteFrom = { line: currentLineNumber, ch: 0 };
+        deleteTo = { line: currentLineNumber + 1, ch: 0 };
+      }
+      
+      // 执行删除
+      editor.replaceRange("", deleteFrom, deleteTo);
+      
+      // 调整光标位置
+      let newCursorPos: { line: number; ch: number };
+      if (totalLines === 1) {
+        // 如果原来只有一行，光标移到开头
+        newCursorPos = { line: 0, ch: 0 };
+      } else if (currentLineNumber === totalLines - 1) {
+        // 如果删除的是最后一行，光标移到新的最后一行的末尾
+        const newLastLine = Math.max(0, currentLineNumber - 1);
+        newCursorPos = { line: newLastLine, ch: editor.getLine(newLastLine).length };
+      } else {
+        // 光标移到下一行的开头（现在占据了被删除行的位置）
+        newCursorPos = { line: currentLineNumber, ch: 0 };
+      }
+      
+      editor.setCursor(newCursorPos);
+      this.focusEditor(view, editor, newCursorPos);
+      this.updateStatus("已删除当前行", 'success');
+      new Notice("已删除光标所在行");
+    }
+
+    /** 删除所有行尾空白 */
+    removeTrailingWhitespace() {
+      this.updateStatus("正在删除行尾空白...", 'working');
+      
+      const result = this.getActiveEditor();
+      if (!result) {
+        this.updateStatus("需要打开 Markdown 文件", 'error');
+        new Notice("请打开一个 Markdown 文件并切换到编辑模式");
+        return;
+      }
+      const { editor, view } = result;
+      let content = editor.getValue();
+
+      // 保存当前光标位置
+      const cursorPos = editor.getCursor();
+      
+      // 统计处理的行数
+      const lines = content.split('\n');
+      let processedLines = 0;
+      
+      // 删除每行末尾的空白字符（空格和制表符）
+      const processedContent = lines.map(line => {
+        const trimmedLine = line.replace(/[ \t]+$/, '');
+        if (trimmedLine !== line) {
+          processedLines++;
+        }
+        return trimmedLine;
+      }).join('\n');
+
+      if (processedLines === 0) {
+        this.updateStatus("未找到行尾空白", 'error');
+        new Notice("未找到行尾空白字符");
+        return;
+      }
+
+      editor.setValue(processedContent);
+      this.focusEditor(view, editor, cursorPos);
+      this.updateStatus(`已处理 ${processedLines} 行`, 'success');
+      new Notice(`已删除 ${processedLines} 行的行尾空白`);
+    }
+
+    /** 删除选中区域所在的整行 */
+    deleteSelectedLines() {
+      this.updateStatus("正在删除选中区域所在行...", 'working');
+      
+      const result = this.getActiveEditor();
+      if (!result) {
+        this.updateStatus("需要打开 Markdown 文件", 'error');
+        new Notice("请打开一个 Markdown 文件并切换到编辑模式");
+        return;
+      }
+      const { editor, view } = result;
+      
+      // 获取选中区域
+      const selection = editor.getSelection();
+      if (!selection) {
+        this.updateStatus("未选中任何内容", 'error');
+        new Notice("请先选择要删除的文本区域");
+        return;
+      }
+      
+      // 获取选中区域的起始和结束位置
+      const selectionStart = editor.getCursor("from");
+      const selectionEnd = editor.getCursor("to");
+      
+      // 检查是否跨越多行
+      if (selectionStart.line === selectionEnd.line) {
+        this.updateStatus("选中区域仅在单行", 'error');
+        new Notice("选中区域必须跨越多行才能使用此功能");
+        return;
+      }
+      
+      // 确定要删除的行范围
+      const startLine = selectionStart.line;
+      const endLine = selectionEnd.line;
+      const totalLines = editor.lineCount();
+      
+      // 计算删除范围
+      let deleteFrom: { line: number; ch: number };
+      let deleteTo: { line: number; ch: number };
+      
+      if (startLine === 0 && endLine === totalLines - 1) {
+        // 如果选中了所有行，清空文档但保留一个空行
+        deleteFrom = { line: 0, ch: 0 };
+        deleteTo = { line: totalLines - 1, ch: editor.getLine(totalLines - 1).length };
+        editor.replaceRange("", deleteFrom, deleteTo);
+        editor.setCursor({ line: 0, ch: 0 });
+      } else if (endLine === totalLines - 1) {
+        // 如果包含最后一行，需要删除前一行的换行符
+        deleteFrom = { line: startLine - 1, ch: editor.getLine(startLine - 1).length };
+        deleteTo = { line: endLine, ch: editor.getLine(endLine).length };
+        editor.replaceRange("", deleteFrom, deleteTo);
+        // 光标移到删除区域的前一行末尾
+        const newLine = Math.max(0, startLine - 1);
+        editor.setCursor({ line: newLine, ch: editor.getLine(newLine).length });
+      } else {
+        // 删除选中行及其后的换行符
+        deleteFrom = { line: startLine, ch: 0 };
+        deleteTo = { line: endLine + 1, ch: 0 };
+        editor.replaceRange("", deleteFrom, deleteTo);
+        // 光标移到删除区域的开始位置
+        editor.setCursor({ line: startLine, ch: 0 });
+      }
+      
+      const deletedLinesCount = endLine - startLine + 1;
+      this.focusEditor(view, editor);
+      this.updateStatus(`已删除 ${deletedLinesCount} 行`, 'success');
+      new Notice(`已删除选中区域所在的 ${deletedLinesCount} 行`);
     }
   
     async onClose() {
