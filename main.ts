@@ -78,7 +78,6 @@ import {
   
   class EditorPlusView extends ItemView {
     app: App;
-  private statusIndicator: HTMLElement | null = null;
   
     constructor(leaf: WorkspaceLeaf, app: App) {
       super(leaf);
@@ -170,18 +169,7 @@ import {
     // 创建主容器
     const mainContainer = container.createEl("div", { cls: "editor-plus-container" });
 
-    // 创建标题区域
-    const headerSection = mainContainer.createEl("div", { cls: "editor-plus-header" });
-    const titleEl = headerSection.createEl("h2", { 
-      text: "Markdown Editor Plus",
-      cls: "editor-plus-title"
-    });
-    
-    // 添加副标题
-    headerSection.createEl("p", {
-      text: "Markdown 文本管理工具",
-      cls: "editor-plus-subtitle"
-    });
+    // 标题区域已移除
 
     // 创建功能区域
     const functionsSection = mainContainer.createEl("div", { cls: "editor-plus-functions" });
@@ -305,27 +293,10 @@ import {
     `;
     btnTrimWhitespace.onclick = () => this.removeTrailingWhitespace();
   
-    // 添加状态指示器
-    const statusSection = mainContainer.createEl("div", { cls: "editor-plus-status" });
-    this.statusIndicator = statusSection.createEl("div", { 
-      text: "就绪",
-      cls: "status-indicator ready"
-    });
+
   }
 
-  private updateStatus(message: string, type: 'ready' | 'working' | 'success' | 'error' = 'ready') {
-    if (this.statusIndicator) {
-      this.statusIndicator.textContent = message;
-      this.statusIndicator.className = `status-indicator ${type}`;
-      
-      // 自动重置状态
-      if (type === 'success' || type === 'error') {
-        setTimeout(() => {
-          this.updateStatus("就绪", 'ready');
-        }, 3000);
-      }
-    }
-  }
+
 
   private addStyles() {
     // 检查是否已经添加了样式
@@ -339,7 +310,7 @@ import {
       .editor-plus-container {
         padding: 20px 16px;
         font-family: var(--font-interface);
-        background: var(--background-primary);
+        background: transparent;
         border-radius: 8px;
         height: 100%;
         display: flex;
@@ -347,29 +318,7 @@ import {
         gap: 24px;
       }
 
-      .editor-plus-header {
-        text-align: center;
-        padding-bottom: 16px;
-        border-bottom: 2px solid var(--background-modifier-border);
-      }
 
-      .editor-plus-title {
-        margin: 0 0 8px 0;
-        font-size: 20px;
-        font-weight: 600;
-        color: var(--text-normal);
-        background: linear-gradient(135deg, var(--text-accent), var(--text-accent-hover));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .editor-plus-subtitle {
-        margin: 0;
-        font-size: 13px;
-        color: var(--text-muted);
-        font-weight: 400;
-      }
 
       .editor-plus-functions {
         flex: 1;
@@ -509,88 +458,7 @@ import {
         border-color: #dc2626;
       }
 
-      .editor-plus-status {
-        padding: 12px;
-        background: var(--background-secondary);
-        border-radius: 6px;
-        border: 1px solid var(--background-modifier-border);
-      }
 
-      .status-indicator {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 12px;
-        font-weight: 500;
-      }
-
-      .status-indicator.ready {
-        color: var(--text-success);
-      }
-
-      .status-indicator.working {
-        color: var(--text-accent);
-      }
-
-      .status-indicator.success {
-        color: var(--text-success);
-      }
-
-      .status-indicator.error {
-        color: var(--text-error);
-      }
-
-      .status-indicator.ready::before,
-      .status-indicator.working::before,
-      .status-indicator.success::before,
-      .status-indicator.error::before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-      }
-
-      .status-indicator.ready::before {
-        background: var(--text-success);
-        animation: pulse 2s infinite;
-      }
-
-      .status-indicator.working::before {
-        background: var(--text-accent);
-        animation: spin 1s linear infinite;
-      }
-
-      .status-indicator.success::before {
-        background: var(--text-success);
-        animation: flash 0.5s ease-in-out;
-      }
-
-      .status-indicator.error::before {
-        background: var(--text-error);
-        animation: shake 0.5s ease-in-out;
-      }
-
-      @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.5; }
-        100% { opacity: 1; }
-      }
-
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-
-      @keyframes flash {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.8; transform: scale(1.2); }
-      }
-
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-2px); }
-        75% { transform: translateX(2px); }
-      }
 
       .dark .editor-plus-container {
         background: var(--background-primary);
@@ -622,11 +490,11 @@ import {
   
         /** 查找上一个/下一个粗体 */
     findBold(direction: "prev" | "next") {
-      this.updateStatus("正在查找...", 'working');
+
       
       const result = this.getActiveEditor();
       if (!result) {
-        this.updateStatus("需要打开 Markdown 文件", 'error');
+
         new Notice("请打开一个 Markdown 文件并切换到编辑模式");
         return;
       }
@@ -643,7 +511,7 @@ import {
       }
   
       if (matches.length === 0) {
-        this.updateStatus("未找到粗体文本", 'error');
+
         new Notice("没有粗体文本");
         return;
       }
@@ -655,11 +523,11 @@ import {
           const toPos = editor.offsetToPos(nextMatch.to);
           editor.setSelection(fromPos, toPos);
           this.focusEditor(view, editor, fromPos);
-          this.updateStatus("已选中下一个粗体", 'success');
+
           new Notice("已选中下一个粗体");
           return;
         }
-        this.updateStatus("已到达最后一个", 'error');
+
         new Notice("没有下一个粗体了");
       } else {
         const prevMatch = [...matches].reverse().find(m => m.to < cursorOffset);
@@ -668,22 +536,22 @@ import {
           const toPos = editor.offsetToPos(prevMatch.to);
           editor.setSelection(fromPos, toPos);
           this.focusEditor(view, editor, fromPos);
-          this.updateStatus("已选中上一个粗体", 'success');
+
           new Notice("已选中上一个粗体");
           return;
         }
-        this.updateStatus("已到达第一个", 'error');
+
         new Notice("没有上一个粗体了");
       }
     }
   
         /** 取消全部粗体 */
     removeAllBold() {
-      this.updateStatus("正在处理...", 'working');
+
       
       const result = this.getActiveEditor();
       if (!result) {
-        this.updateStatus("需要打开 Markdown 文件", 'error');
+
         new Notice("请打开一个 Markdown 文件并切换到编辑模式");
         return;
       }
@@ -692,7 +560,7 @@ import {
   
       const boldCount = (content.match(/\*\*(.+?)\*\*/g) || []).length;
       if (boldCount === 0) {
-        this.updateStatus("未找到粗体文本", 'error');
+
         new Notice("未找到粗体");
         return;
       }
@@ -701,17 +569,17 @@ import {
 
       editor.setValue(content);
       this.focusEditor(view, editor);
-      this.updateStatus(`已取消 ${boldCount} 处粗体`, 'success');
+
       new Notice(`已取消 ${boldCount} 处粗体`);
     }
   
         /** 取消当前选中的粗体 */
     removeSelectedBold() {
-      this.updateStatus("正在处理选中文本...", 'working');
+
       
       const result = this.getActiveEditor();
       if (!result) {
-        this.updateStatus("需要打开 Markdown 文件", 'error');
+
         new Notice("请打开一个 Markdown 文件并切换到编辑模式");
         return;
       }
@@ -719,7 +587,7 @@ import {
       const sel = editor.getSelection();
 
       if (!sel || !sel.startsWith("**") || !sel.endsWith("**")) {
-        this.updateStatus("未选中粗体文本", 'error');
+
         new Notice("当前未正确选中粗体文本");
         return;
       }
@@ -728,17 +596,17 @@ import {
       const cursorPos = editor.getCursor();
       editor.replaceSelection(unbold);
       this.focusEditor(view, editor, cursorPos);
-      this.updateStatus("已取消选中的粗体", 'success');
+
       new Notice("已取消当前选中的粗体");
     }
 
     /** 删除所有分割线 */
     removeAllDividers() {
-      this.updateStatus("正在删除分割线...", 'working');
+
       
       const result = this.getActiveEditor();
       if (!result) {
-        this.updateStatus("需要打开 Markdown 文件", 'error');
+
         new Notice("请打开一个 Markdown 文件并切换到编辑模式");
         return;
       }
@@ -751,7 +619,7 @@ import {
       const dividerCount = matches ? matches.length : 0;
       
       if (dividerCount === 0) {
-        this.updateStatus("未找到分割线", 'error');
+
         new Notice("未找到分割线");
         return;
       }
@@ -761,17 +629,17 @@ import {
 
       editor.setValue(content);
       this.focusEditor(view, editor);
-      this.updateStatus(`已删除 ${dividerCount} 条分割线`, 'success');
+
       new Notice(`已删除 ${dividerCount} 条分割线`);
     }
 
     /** 删除光标所在行 */
     deleteCurrentLine() {
-      this.updateStatus("正在删除当前行...", 'working');
+
       
       const result = this.getActiveEditor();
       if (!result) {
-        this.updateStatus("需要打开 Markdown 文件", 'error');
+
         new Notice("请打开一个 Markdown 文件并切换到编辑模式");
         return;
       }
@@ -824,17 +692,17 @@ import {
       
       editor.setCursor(newCursorPos);
       this.focusEditor(view, editor, newCursorPos);
-      this.updateStatus("已删除当前行", 'success');
+
       new Notice("已删除光标所在行");
     }
 
     /** 删除所有行尾空白 */
     removeTrailingWhitespace() {
-      this.updateStatus("正在删除行尾空白...", 'working');
+
       
       const result = this.getActiveEditor();
       if (!result) {
-        this.updateStatus("需要打开 Markdown 文件", 'error');
+
         new Notice("请打开一个 Markdown 文件并切换到编辑模式");
         return;
       }
@@ -858,24 +726,24 @@ import {
       }).join('\n');
 
       if (processedLines === 0) {
-        this.updateStatus("未找到行尾空白", 'error');
+
         new Notice("未找到行尾空白字符");
         return;
       }
 
       editor.setValue(processedContent);
       this.focusEditor(view, editor, cursorPos);
-      this.updateStatus(`已处理 ${processedLines} 行`, 'success');
+
       new Notice(`已删除 ${processedLines} 行的行尾空白`);
     }
 
     /** 删除选中区域所在的整行 */
     deleteSelectedLines() {
-      this.updateStatus("正在删除选中区域所在行...", 'working');
+
       
       const result = this.getActiveEditor();
       if (!result) {
-        this.updateStatus("需要打开 Markdown 文件", 'error');
+
         new Notice("请打开一个 Markdown 文件并切换到编辑模式");
         return;
       }
@@ -884,7 +752,7 @@ import {
       // 获取选中区域
       const selection = editor.getSelection();
       if (!selection) {
-        this.updateStatus("未选中任何内容", 'error');
+
         new Notice("请先选择要删除的文本区域");
         return;
       }
@@ -895,7 +763,7 @@ import {
       
       // 检查是否跨越多行
       if (selectionStart.line === selectionEnd.line) {
-        this.updateStatus("选中区域仅在单行", 'error');
+
         new Notice("选中区域必须跨越多行才能使用此功能");
         return;
       }
@@ -934,7 +802,7 @@ import {
       
       const deletedLinesCount = endLine - startLine + 1;
       this.focusEditor(view, editor);
-      this.updateStatus(`已删除 ${deletedLinesCount} 行`, 'success');
+
       new Notice(`已删除选中区域所在的 ${deletedLinesCount} 行`);
     }
   
